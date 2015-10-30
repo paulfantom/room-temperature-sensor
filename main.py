@@ -25,7 +25,7 @@ def read_temp():
   temp = 0
   hum = 0
   try:
-    import sht21
+    import core.sht21 as sht21
     sht = sht21.SHT21(BUS)
     for i in range(SAMPLES):
       temp += sht.read_temperature()
@@ -43,8 +43,8 @@ def read_press(read_temp=False):
   temp = 0
   press = 0
   try:
-    import Adafruit_BMP.BMP085 as BMP085
-    pres_sensor = BMP085.BMP085(busnum=BUS, mode=BMP085.BMP085_HIGHRES)
+    import core.bmp085 as bmp085
+      pres_sensor = bmp085.BMP085(busnum=BUS, mode=bmp085.BMP085_HIGHRES)
     
     if read_temp:
       for i in range(SAMPLES):

@@ -7,7 +7,7 @@ SERVER_IP = 'localhost'
 
 ALTITUDE = 211
 USE_APPARENT = False
-BUS = 0
+BUS = 1
 SAMPLES = 1 
 
 def apparent_temperature(temp,humidity):
@@ -44,7 +44,7 @@ def read_press(read_temp=False):
   press = 0
   try:
     import core.bmp085 as bmp085
-      pres_sensor = bmp085.BMP085(busnum=BUS, mode=bmp085.BMP085_HIGHRES)
+    pres_sensor = bmp085.BMP085(busnum=BUS, mode=bmp085.BMP085_HIGHRES)
     
     if read_temp:
       for i in range(SAMPLES):
@@ -57,9 +57,11 @@ def read_press(read_temp=False):
     press = float(press)
     press /= SAMPLES
     press /= 100  # convert Pa to hPa
-  except Exception:
+  except Exception as e:
+    print("Cannot connect to pressure sensor")
+    print(e)
     pass
-
+  
   return (press,temp)
 
 def pressure_to_sealevel(press,temp,altitude):
@@ -104,6 +106,7 @@ def on_message(client, userdata, msg):
         USE_APPARENT = bool(int(msg.payload))
 
 if __name__ == '__main__':
+    #print(get_data()) 
     client = mqtt.Client('Room 1')
     client.on_connect = on_connect
     client.on_message = on_message

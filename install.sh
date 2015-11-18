@@ -11,4 +11,5 @@ eval $SUDO apt-get install -yqq python-virtualenv
 virtualenv venv
 source venv/bin/activate
 pip install paho-mqtt smbus-cffi
+deactivate
 exit 0

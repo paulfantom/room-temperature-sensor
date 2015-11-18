@@ -1,6 +1,12 @@
 #!/bin/bash
 
-apt-get install -y python-virtualenv
+if [ $(id -u) -eq 0 ]; then
+  SUDO=""
+else
+  SUDO="sudo"
+fi
+
+eval $SUDO apt-get install -yqq python-virtualenv
 
 virtualenv venv
 source venv/bin/activate

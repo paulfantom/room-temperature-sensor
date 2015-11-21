@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from sys import exit
 import paho.mqtt.client as mqtt
 from time import sleep
 
@@ -35,8 +36,10 @@ def read_temp():
     
     temp /= SAMPLES
     hum /= SAMPLES
-  except Exception:
-    pass
+  except Exception as e:
+    print "Cannot read temperature; exiting"
+    print e
+    exit(127)
   return (temp,hum)
 
 def read_press(read_temp=False):

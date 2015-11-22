@@ -8,6 +8,9 @@ SERVER_IP = 'localhost'
 
 ALTITUDE = 211
 USE_APPARENT = False
+PRESSURE = None
+REAL_TEMP = None
+HUMIDITY = None
 BUS = 1
 SAMPLES = 1 
 
@@ -77,14 +80,27 @@ def pressure_to_sealevel(press,temp,altitude):
 
     return p
 
-def get_data():
+def moving_avg(last,new):
+    new = 2*last + new
+    return new / 3
+    
+def get_data(last_temperature=None,last_humidity=None,last_pressure=None):
     (temperature, humidity) = read_temp();
     (pressure,t) = read_press(True);
     pressure = pressure_to_sealevel(pressure,t,ALTITUDE);
-    apparent = round(apparent_temperature(temperature,humidity),1)
     temperature = round(temperature,1)
+    
+    if last_pressure is not None:
+        pressure = moving_avg(last_pressure,pressure)
+    if last_temperature is not None:
+        temperature = moving_avg(last_temperature,temperature)
+    if last_humidity is not None:
+        humidity = moving_avg(last_humidity,humidity)
+
+    apparent = round(apparent_temperature(temperature,humidity),1)
     humidity = round(humidity,1)
     pressure = round(pressure,1)
+    
     if USE_APPARENT: current = apparent
     else: current = temperature 
     print "H:"+str(humidity), "P:"+str(pressure), "T:"+str(temperature), "A:"+str(apparent), "C:"+str(current)
@@ -96,7 +112,8 @@ def get_data():
             {'topic':"room/1/temp_current", 'payload':str(current), 'retain':True}]
 
 def check(client):
-    msgs = get_data()
+    msgs = get_data(REAL_TEMP,HUMIDITY,PRESSURE)
+    print REAL_TEMP, HUMIDITY, PRESSURE
     for data in msgs:
         client.publish(**data) 
 
@@ -107,6 +124,15 @@ def on_message(client, userdata, msg):
     if(msg.topic == 'room/1/use_apparent'):
         global USE_APPARENT
         USE_APPARENT = bool(int(msg.payload))
+    if(msg.topic == 'room/1/temp_real'):
+        global REAL_TEMP
+        REAL_TEMP = float(msg.payload)
+    if(msg.topic == 'room/1/humidity'):
+        global HUMIDITY
+        HUMIDITY = float(msg.payload)
+    if(msg.topic == 'room/1/pressure'):
+        global PRESSURE
+        PRESSURE = float(msg.payload)
 
 if __name__ == '__main__':
     #print(get_data()) 

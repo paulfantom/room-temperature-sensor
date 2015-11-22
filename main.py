@@ -119,6 +119,9 @@ def check(client):
 
 def on_connect(client, userdata, flags, rc):
     client.subscribe("room/1/use_apparent")
+    client.subscribe("room/1/temp_real")
+    client.subscribe("room/1/humidity")
+    client.subscribe("room/1/pressure")
 
 def on_message(client, userdata, msg):
     if(msg.topic == 'room/1/use_apparent'):

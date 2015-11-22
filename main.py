@@ -104,7 +104,7 @@ def get_data(last_temperature=None,last_humidity=None,last_pressure=None):
     
     if USE_APPARENT: current = apparent
     else: current = temperature 
-    print strftime("%m-%d %H:%M")+">> H:"+str(humidity), "P:"+str(pressure), "T:"+str(temperature), "A:"+str(apparent), "C:"+str(current)
+    print strftime("%m-%d %H:%M")+" >>> H:"+str(humidity), "P:"+str(pressure), "T:"+str(temperature), "A:"+str(apparent), "C:"+str(current)
 
     return [{'topic':"room/1/temp_real", 'payload':str(temperature), 'retain':True},
             {'topic':"room/1/temp_feel", 'payload':str(apparent), 'retain':True},
@@ -113,7 +113,7 @@ def get_data(last_temperature=None,last_humidity=None,last_pressure=None):
             {'topic':"room/1/temp_current", 'payload':str(current), 'retain':True}]
 
 def check(client):
-    print REAL_TEMP, HUMIDITY, PRESSURE
+    print strftime("%m-%d %H:%M")+" PRV H:"+str(HUMIDITY)+" P:"+str(PRESSURE)+" T:"+str(REAL_TEMP)
     msgs = get_data(REAL_TEMP,HUMIDITY,PRESSURE)
     for data in msgs:
         client.publish(**data) 

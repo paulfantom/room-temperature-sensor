@@ -93,7 +93,8 @@ def get_data(last_temperature=None,last_humidity=None,last_pressure=None):
     if last_pressure is not None:
         pressure = moving_avg(last_pressure,pressure)
     if last_temperature is not None:
-        temperature = moving_avg(last_temperature,temperature)
+        temperature = moving_avg(last_temperature,temperature) 
+        temperature = round(temperature,1)
     if last_humidity is not None:
         humidity = moving_avg(last_humidity,humidity)
 

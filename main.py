@@ -2,7 +2,7 @@
 
 from sys import exit
 import paho.mqtt.client as mqtt
-from time import sleep
+from time import sleep, strftime
 
 SERVER_IP = 'localhost'
 
@@ -103,7 +103,7 @@ def get_data(last_temperature=None,last_humidity=None,last_pressure=None):
     
     if USE_APPARENT: current = apparent
     else: current = temperature 
-    print "H:"+str(humidity), "P:"+str(pressure), "T:"+str(temperature), "A:"+str(apparent), "C:"+str(current)
+    print strftime("%m-%d %H:%M")+">> H:"+str(humidity), "P:"+str(pressure), "T:"+str(temperature), "A:"+str(apparent), "C:"+str(current)
 
     return [{'topic':"room/1/temp_real", 'payload':str(temperature), 'retain':True},
             {'topic':"room/1/temp_feel", 'payload':str(apparent), 'retain':True},
@@ -112,8 +112,8 @@ def get_data(last_temperature=None,last_humidity=None,last_pressure=None):
             {'topic':"room/1/temp_current", 'payload':str(current), 'retain':True}]
 
 def check(client):
-    msgs = get_data(REAL_TEMP,HUMIDITY,PRESSURE)
     print REAL_TEMP, HUMIDITY, PRESSURE
+    msgs = get_data(REAL_TEMP,HUMIDITY,PRESSURE)
     for data in msgs:
         client.publish(**data) 
 
@@ -144,6 +144,8 @@ if __name__ == '__main__':
     client.on_message = on_message
     client.connect(SERVER_IP, 1883, 60)
     client.loop_start()
+    # delay to parse incoming msgs
+    sleep(2)
     while True:
         check(client)
         sleep(60)
